@@ -130,6 +130,26 @@
   "Default sources for `helm-projectile'."
   :group 'helm-projectile)
 
+;; helm projectile project
+
+(defvar helm-source-projectile-projects-list
+  `((name . "Projectile Projects")
+    (candidates . projectile-known-projects)
+    (action . (lambda (project-to-switch) 
+                (projectile-switch-project-by-name project-to-switch arg)))
+    (action-transformer . helm-projectile-projectile-actions-list)))
+
+(defcustom helm-projectile-projects-sources-list
+  '(helm-source-projectile-projects-list)
+  "Default sources for `helm-projectile-projects'."
+  :group 'helm-projectile)
+
+(defun helm-projectile-projectile-actions-list (actions project)
+  "Return a list of helm ACTIONS available for this project.
+Argument PROJECT project name."
+  '(("Switch project" . projectile-switch-project-by-name)))
+
+
 ;;;###autoload
 (defun helm-projectile (&optional arg)
   "Use projectile with Helm instead of ido.
@@ -143,8 +163,23 @@ With a prefix ARG invalidates the cache first."
           :prompt (projectile-prepend-project-name "pattern: "))))
 
 ;;;###autoload
+(defun helm-projectile-projects (&optional arg)
+  "Use `projectile-switch-project' with Helm instead of ido.
+
+With a prefix ARG invalidates the cache first."
+  (interactive "P")
+  (projectile-maybe-invalidate-cache arg)
+  (let ((helm-ff-transformer-show-only-basename nil))
+    (helm :sources helm-projectile-projects-sources-list
+          :buffer "*helm projectile projects*"
+          :prompt (projectile-prepend-project-name "pattern: "))))
+
+;;;###autoload
 (eval-after-load 'projectile
-    '(define-key projectile-mode-map (kbd "C-c p h") 'helm-projectile))
+  '(progn
+     (setq projectile-switch-project-action (quote helm-projectile))
+     (define-key projectile-mode-map (kbd "C-c C-p h") 'helm-projectile-projects)
+     (define-key projectile-mode-map (kbd "C-c p h") 'helm-projectile)))
 
 (provide 'helm-projectile)
 ;;; helm-projectile.el ends here
