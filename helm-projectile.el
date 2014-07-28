@@ -136,8 +136,7 @@
   `((name . "Projectile Projects")
     (candidates . projectile-known-projects)
     (action . (lambda (project-to-switch) 
-                (projectile-switch-project-by-name project-to-switch arg)))
-    (action-transformer . helm-projectile-projectile-actions-list)))
+                (projectile-switch-project-by-name project-to-switch arg)))))
 
 (defcustom helm-projectile-projects-sources-list
   '(helm-source-projectile-projects-list)
